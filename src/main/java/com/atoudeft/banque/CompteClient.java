@@ -25,11 +25,6 @@ public class CompteClient implements Serializable {
         return nip;
     }
 
-    /** CONNECT  pour recuperer num compte cheque pour set cnx **/
-    public List<CompteBancaire> getComptes() {
-        return comptes;
-    }
-
     /**
      * Ajoute un compte bancaire au compte-client.
      *

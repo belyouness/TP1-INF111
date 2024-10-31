@@ -6,6 +6,7 @@ public abstract class CompteBancaire implements Serializable {
     private String numero;
     private TypeCompte type;
     protected double solde;
+    protected double interets;/** necessaire pour compte-epargne **/
 
     /**
      * Génère un numéro de compte bancaire aléatoirement avec le format CCC00C, où C est un caractère alphabétique
@@ -32,6 +33,13 @@ public abstract class CompteBancaire implements Serializable {
     public CompteBancaire(String numero, TypeCompte type) {
         this.numero = numero;
         this.type = type;
+        this.solde = 0;
+    }
+    /** constructeur necessaire pour l'enfant COMPTE-EPARGNE **/
+    public CompteBancaire(String numero, TypeCompte type,Double interets) {
+        this.numero = numero;
+        this.type = type;
+        this.interets=interets;
         this.solde = 0;
     }
     public String getNumero() {

@@ -106,6 +106,13 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         cnx.envoyer("CONNECT OK");
                         break;
                     }
+                /******************* METHODE EPARGNE *******************/
+                case "EPARGNE": //permet au client de creer un compte epargne si n'existe pas deja
+
+
+
+
+
 
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
