@@ -1,7 +1,6 @@
 package com.atoudeft.serveur;
 
-import com.atoudeft.banque.Banque;
-import com.atoudeft.banque.CompteClient;
+import com.atoudeft.banque.*;
 import com.atoudeft.banque.serveur.ConnexionBanque;
 import com.atoudeft.banque.serveur.ServeurBanque;
 import com.atoudeft.commun.evenement.Evenement;
@@ -87,11 +86,12 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     t = argument.split(":");
                     numCompteClient=t[0];
                     nip=t[1];
+
                     for (Connexion cn: serveur.connectes
                          ) {
-                        if(((ConnexionBanque)cn).getNumeroCompteClient().equals(numCompteClient)){
+                        if(((ConnexionBanque)cn).getNumeroCompteClient()==null||((ConnexionBanque)cn).getNumeroCompteClient().equals(numCompteClient)){
                             cnx.envoyer("CONNECT NO");
-                            break;
+                            return;
                         }
                     }
 
@@ -108,9 +108,41 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     }
                 /******************* METHODE EPARGNE *******************/
                 case "EPARGNE": //permet au client de creer un compte epargne si n'existe pas deja
+                    if (cnx.getNumeroCompteClient()==null||serveurBanque.getBanque().getNumeroCompteEpargne(cnx.getNumeroCompteClient())!=null) {
+                        cnx.envoyer("EPARGNE NO");
+                        return;
+                    }
+                    String numepargneGen= CompteBancaire.genereNouveauNumero();
+                    while (serveurBanque.getBanque().getListeCompteNum().contains(numepargneGen)){
+                        numepargneGen= CompteBancaire.genereNouveauNumero();
+                    }
+
+                    CompteEpargne epargne=new CompteEpargne(numepargneGen, TypeCompte.EPARGNE,0.05);
+                    serveurBanque.getBanque().getCompteClient(cnx.getNumeroCompteClient()).ajouter(epargne);
+                /******************* METHODE SELECT *******************/
+
+                /******************* METHODE DEPOT *******************/
+                case"DEPOT":
+                    argument=evenement.getArgument();
+                    if(cnx.getNumeroCompteClient()==null||!argument.matches("[0-9 ]*")){
+                        cnx.envoyer("DEPOT NO");
+                        return;
+                    }
 
 
 
+                /******************* METHODE RETRAIT *******************/
+                case"RETRAIT":
+                    if(cnx.getNumeroCompteClient()==null){
+                        cnx.envoyer("RETRAIT NO");
+                        return;
+                    }
+                    argument=evenement.getArgument();
+
+                /******************* METHODE FACTURE *******************/
+
+
+                /******************* METHODE TRANSFER *******************/
 
 
 

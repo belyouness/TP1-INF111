@@ -153,5 +153,35 @@ public class Banque implements Serializable {
          return null; /** verifier avec prof si un seul return ou pas **/
     }
 
+    /** get le num du compte-epargne du client si il existe **/
+    public String getNumeroCompteEpargne(String numCompteClient) {
+        //À compléter : retourner le numéro du compte-epargne du compte-client si il existe.
+        for (CompteClient client:comptes
+        ) {
+            if(client.numero==numCompteClient){
+                for (CompteBancaire ban: client.comptes
+                ) {
+                    if(ban.getType()==TypeCompte.EPARGNE){
+                        return ban.getNumero();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Recupere la liste des numeros de chaque compte de la banque pour simplifier verification au niveau de nouveau compte bancaire pour client **/
+    public ArrayList<String> getListeCompteNum() {
+        ArrayList<String> str=new ArrayList<>();
+        for (CompteClient client:comptes
+        ) {
+            for (CompteBancaire bnc: client.comptes
+                 ) {
+                str.add(bnc.getNumero());
+            }
+        }
+        return null;
+    }
+
 
 }
