@@ -233,8 +233,20 @@ public class Banque implements Serializable {
     public String getHistoriqueCompteSeelcted(String numCompteSelected){
         String str="HIS ";
         CompteBancaire compteSeHis=getCompte(numCompteSelected);
-        while(!compteSeHis.historique.estVide()){
-          String  valeur = compteSeHis.historique.depiler().toString();
+        PileChainee copy=new PileChainee();
+        PileChainee temp=new PileChainee();
+        while (!compteSeHis.historique.estVide()){
+            temp.empiler(compteSeHis.historique.depiler());
+        }
+
+        while (!temp.estVide()){
+            Object valeur= temp.depiler();
+            compteSeHis.historique.empiler(valeur);
+            copy.empiler(valeur);
+        }
+
+        while(!copy.estVide()){
+          String  valeur = copy.depiler().toString();
             str+=valeur+" \n ";
         }
         return str;

@@ -16,6 +16,7 @@ public class CompteCheque extends CompteBancaire {
      */
     public CompteCheque(String numero, TypeCompte type) {
         super(numero, type);
+        super.historique=new PileChainee(40);
     }
 
     /**

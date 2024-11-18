@@ -8,6 +8,7 @@ public class CompteEpargne extends CompteBancaire{
 
     public CompteEpargne(String numero, TypeCompte type, Double interets) {
         super(numero, type, interets);
+        super.historique=new PileChainee(40);
     }
 
     public void ajouterInterets(){

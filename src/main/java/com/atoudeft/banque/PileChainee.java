@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 public class PileChainee implements Serializable {
 
-
-        private Object[] donnees;  //les données de la file
-        private int sommet; 		//indice de l'élément au sommet de la file
+        private Noeud sommet; 		//référence l'élément au sommet de la file
 
         private int nbElement; 	//Nombre d'éléments dans la pile (utilisé pour
         //ne pas avoir à recalculer le nombre d'éléments dans
@@ -15,35 +13,34 @@ public class PileChainee implements Serializable {
 
         /**
          * Constructeur sans paramètre
-         * Crée une pile avec une capacité de 10.
+         * Initialise la référence premier à null et nbElement à 0.
          */
         public PileChainee(){
-            this.donnees=new Object[30];
-            this.sommet=-1;
-            this.nbElement=0;
+            this.sommet = null;
+            this.nbElement = 0;
         }
 
         /**
-         * Crée une pile de la taille demandée.
+         * Crée une pile de la même façon que le premier constructeur.
+         * Ce constructeur est laissé là juste pour que les programmes déjà écrits
+         * avec le version statique de la pile continuent de fonctionner.
          * @param taille La taille voulue pour la file.
          */
         public PileChainee(int taille){
-            this.donnees=new Object[taille];
-            this.sommet=-1;
-            this.nbElement=0;
+            this.sommet = null;
+            this.nbElement = 0;
         }
 
         /**
          * Ajoute un élément au sommet de la pile.
          *
          * @param element l'élément à empiler.
-         * @return true si l'opération réussit et false sinon (pile pleine)
+         * @return true si l'opération réussit et false sinon (ce qui n'arrive jamais)
          */
         public boolean empiler(Object element) {
-            if(taille()== donnees.length){return false;}
-            sommet++;
-            donnees[sommet]=element;
-            nbElement++;
+            Noeud nouveau = new Noeud(sommet,element);
+            this.sommet = nouveau;
+            this.nbElement++;
             return true;
         }
 
@@ -53,17 +50,14 @@ public class PileChainee implements Serializable {
          * @return L'élément au sommet de la pile s'il existe ou null sinon.
          */
         public Object depiler(){
-            if(estVide()){
+
+            if (estVide())
                 return null;
-            }
-            else
-            {
-                Object x=donnees[sommet];
-                donnees[sommet]=null;
-                sommet--;
-                nbElement--;
-                return x;
-            }
+
+            Object objRetire = this.sommet.donnee;
+            this.sommet = this.sommet.suivant;
+            this.nbElement--;
+            return objRetire;
         }
 
         /**
@@ -72,16 +66,16 @@ public class PileChainee implements Serializable {
          * @return true si la  pile est vide et false sinon.
          */
         public boolean estVide(){
-            return sommet<0;
+
+            return nbElement==0; //ou: return this.sommet==null;
         }
 
         /**
          * Vide la pile.
          */
         public void vider(){
-            //Indication : utiliser une boucle while pour depiler la pile aussi
-            //longtemps qu'elle n'est pas vide (2 lignes de code).
-            while (!estVide()){depiler();}
+            while (!estVide())
+                depiler();
         }
 
         /**
@@ -90,10 +84,9 @@ public class PileChainee implements Serializable {
          * @return L'élément au sommet si la pile n'est pas vide et null sinon.
          */
         public Object peek(){
-            if (estVide()){
+            if (this.sommet==null) //ou : if (this.nbElement==0)
                 return null;
-            }
-            return donnees[sommet];
+            return this.sommet.donnee;
         }
 
 
@@ -104,7 +97,16 @@ public class PileChainee implements Serializable {
          */
         public int taille(){
 
-            return this.nbElement;
+            return nbElement;
         }
 
-}
+        private class Noeud implements Serializable{
+            public Object donnee;
+            public Noeud suivant;
+
+            public Noeud(Noeud next, Object data) {
+                this.donnee = data;
+                this.suivant = next;
+            }
+        }
+    }
