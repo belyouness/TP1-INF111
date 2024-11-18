@@ -12,6 +12,7 @@ public abstract class Operation implements Serializable {
 
     public  Operation (TypeOperation typeOperation,Date date){
         this.typeOperation=typeOperation;
+        this.date=date;
     }
 
 }
