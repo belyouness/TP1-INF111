@@ -214,7 +214,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                 /******************* HISTORIQUE*******************/
                 case"HIST":
                     if(cnx.getNumeroCompteClient()==null){
-                        cnx.envoyer("HIST NO");
+                        cnx.envoyer("HIST  NO");
                         return;
                     }
                     String hist=serveurBanque.getBanque().getHistoriqueCompteSeelcted(cnx.getNumeroCompteActuel());
