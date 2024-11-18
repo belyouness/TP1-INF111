@@ -89,7 +89,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                     for (Connexion cn: serveur.connectes
                          ) {
-                        if(((ConnexionBanque)cn).getNumeroCompteClient()==null||((ConnexionBanque)cn).getNumeroCompteClient().equals(numCompteClient)){
+                        if(((ConnexionBanque)cn).getNumeroCompteClient()!=null&&((ConnexionBanque)cn).getNumeroCompteClient().equals(numCompteClient)){
                             cnx.envoyer("CONNECT NO");
                             return;
                         }
@@ -119,8 +119,35 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                     CompteEpargne epargne=new CompteEpargne(numepargneGen, TypeCompte.EPARGNE,0.05);
                     serveurBanque.getBanque().getCompteClient(cnx.getNumeroCompteClient()).ajouter(epargne);
+                    cnx.envoyer("EPARGNE OUI");
+                    break;
                 /******************* METHODE SELECT *******************/
+                case "SELECT":
+                    if(cnx.getNumeroCompteClient()==null){
+                        cnx.envoyer("SELECT NO");
+                        return;
+                    }
+                    argument=evenement.getArgument();
+                    if(argument.equals("cheque")){
 
+                        String cheque=serveurBanque.getBanque().getNumeroCompteParDefaut(cnx.getNumeroCompteClient());
+                        cnx.setNumeroCompteActuel(cheque);
+                        cnx.envoyer("SELECT OK");
+                        return;
+                    }
+                    else if(argument.equals("epargne")){
+
+                        String epar=serveurBanque.getBanque().getNumeroCompteEpargne(cnx.getNumeroCompteClient());
+                      //  if(epar!=null){
+                            cnx.setNumeroCompteActuel(epar);
+                            cnx.envoyer("SELECT OK");
+                       // }
+                        return;
+                    }
+                    else{
+                        cnx.envoyer("SELECT NO");
+                        break;
+                    }
                 /******************* METHODE DEPOT *******************/
                 case"DEPOT":
                     argument=evenement.getArgument();
@@ -128,8 +155,11 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         cnx.envoyer("DEPOT NO");
                         return;
                     }
-
-
+                    String numComp= cnx.getNumeroCompteActuel();
+                    double montant=Double.valueOf(argument);
+                    serveurBanque.getBanque().deposer(montant,numComp);
+                    cnx.envoyer("DEPOT OUI");
+                    break;
 
                 /******************* METHODE RETRAIT *******************/
                 case"RETRAIT":
@@ -138,13 +168,57 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         return;
                     }
                     argument=evenement.getArgument();
+                    String numCom= cnx.getNumeroCompteActuel();
+                    double monta=Double.valueOf(argument);
+                    serveurBanque.getBanque().retirer(monta,numCom);
+                    cnx.envoyer("RETRAIT OUI");
+                    break;
 
                 /******************* METHODE FACTURE *******************/
-
+                case"FACTURE":
+                    argument=evenement.getArgument();
+                    t=argument.split(" ",3);
+                    if (!t[0].matches("[0-9 ]*")){
+                       cnx.envoyer( "FACTURE NON");
+                       return;
+                    }
+                    double facMon=Double.valueOf(t[0]);
+                    String numFac=t[1];
+                    String desc=t[2];
+                    String numComA= cnx.getNumeroCompteActuel();
+                    serveurBanque.getBanque().payerFacture(facMon,numComA,numFac,desc);
+                    cnx.envoyer("FACTURE OUI");
+                    break;
 
                 /******************* METHODE TRANSFER *******************/
+                case"TRANSFER":
+                    argument=evenement.getArgument();
+                    t=argument.split(" ");
+                    if (!t[0].matches("[0-9 ]*")){
+                        cnx.envoyer( "TRANSFER NON");
+                        return;
+                    }
+                    double mon=Double.valueOf(t[0]);
+                    String numCpt=t[1];
+                    String numCptAc= cnx.getNumeroCompteActuel();
 
+                    if(!serveurBanque.getBanque().getListeCompteNum().contains(numCpt)){
+                        cnx.envoyer( "TRANSFER NON");
+                        return;
+                    }
+                    else
+                    serveurBanque.getBanque().transferer(mon,numCptAc,numCpt);
+                    cnx.envoyer("TRANSFER OUI");
+                    break;
 
+                /******************* HISTORIQUE*******************/
+                case"HIST":
+                    if(cnx.getNumeroCompteClient()==null){
+                        cnx.envoyer("HIST NO");
+                        return;
+                    }
+                    String hist=serveurBanque.getBanque().getHistoriqueCompteSeelcted(cnx.getNumeroCompteActuel());
+                    cnx.envoyer(hist);
 
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :

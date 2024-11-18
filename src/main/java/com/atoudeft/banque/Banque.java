@@ -49,7 +49,13 @@ public class Banque implements Serializable {
      * @return true si le dépot s'est effectué correctement
      */
     public boolean deposer(double montant, String numeroCompte) {
-        throw new NotImplementedException();
+        CompteBancaire bnc=getCompte(numeroCompte);
+        if(bnc.getType()==TypeCompte.CHEQUE||bnc.getType()==TypeCompte.EPARGNE){
+            bnc.crediter(montant);
+            return true;
+        }
+        else
+        return false;
     }
 
     /**
@@ -60,7 +66,13 @@ public class Banque implements Serializable {
      * @return true si le retrait s'est effectué correctement
      */
     public boolean retirer(double montant, String numeroCompte) {
-        throw new NotImplementedException();
+        CompteBancaire bnc=getCompte(numeroCompte);
+        if(bnc.getType()==TypeCompte.CHEQUE||bnc.getType()==TypeCompte.EPARGNE){
+            bnc.debiter(montant);
+            return true;
+        }
+        else
+            return false;
     }
 
     /**
@@ -71,7 +83,18 @@ public class Banque implements Serializable {
      * @return true si l'opération s'est déroulée correctement
      */
     public boolean transferer(double montant, String numeroCompteInitial, String numeroCompteFinal) {
-        throw new NotImplementedException();
+        CompteBancaire compteIni=getCompte(numeroCompteInitial);
+        CompteBancaire compteDes=getCompte(numeroCompteFinal);
+        if(compteIni.getType()==TypeCompte.CHEQUE||compteIni.getType()==TypeCompte.EPARGNE){
+           if (compteIni.debiter(montant)){
+               compteDes.crediter(montant);
+               return true;
+           }
+           else
+               return false;
+        }
+        else
+            return false;
     }
 
     /**
@@ -83,7 +106,14 @@ public class Banque implements Serializable {
      * @return true si le paiement s'est bien effectuée
      */
     public boolean payerFacture(double montant, String numeroCompte, String numeroFacture, String description) {
-        throw new NotImplementedException();
+        CompteBancaire bnc=getCompte(numeroCompte);
+        if(bnc.getType()==TypeCompte.CHEQUE||bnc.getType()==TypeCompte.EPARGNE){
+            bnc.payerFacture(numeroFacture,montant,description);
+            return true;
+        }
+        else
+            return false;
+
     }
 
     /**
@@ -180,8 +210,33 @@ public class Banque implements Serializable {
                 str.add(bnc.getNumero());
             }
         }
-        return null;
+        return str;
     }
 
+    /** Recupere un compte specifique et le retounre (simplifier le process de deposer/retirer) **/
+    public CompteBancaire getCompte(String numCompte){
+        CompteBancaire cbd = null;
+        for (CompteClient c:comptes
+             ) {
+            for (CompteBancaire bnc: c.comptes
+            ) {
+                if(bnc.getNumero().equals(numCompte)){
+                    cbd=bnc;
+                }
+            }
+        }
 
+        return cbd;
+    }
+
+    /** 7.7 Historique **/
+    public String getHistoriqueCompteSeelcted(String numCompteSelected){
+        String str="HIS ";
+        CompteBancaire compteSeHis=getCompte(numCompteSelected);
+        while(!compteSeHis.historique.estVide()){
+          String  valeur = compteSeHis.historique.depiler().toString();
+            str+=valeur+" \n ";
+        }
+        return str;
+    }
 }

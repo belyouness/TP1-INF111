@@ -34,4 +34,19 @@ public class CompteClient implements Serializable {
     public boolean ajouter(CompteBancaire compte) {
         return this.comptes.add(compte);
     }
+
+    /** necessaire pour le indexof du get compte client pour comparer a partir du numero seulement **/
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (obj instanceof CompteClient) {
+            CompteClient cpt = (CompteClient) obj;
+            return this.numero.equals(cpt.numero);
+        }
+        else
+            return false;
+    }
 }
